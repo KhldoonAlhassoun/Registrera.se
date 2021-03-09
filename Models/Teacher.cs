@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Registrera.se.Models
 {
-    public class Teacher
+    public class Teacher : User
     {
         public Teacher() { }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Registrera.se.Models
 {
-    public class Student
+    public class Student 
     {
         public Student() { }
 
