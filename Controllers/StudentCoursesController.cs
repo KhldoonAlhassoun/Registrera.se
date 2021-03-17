@@ -5,38 +5,34 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Registrera.se.Data;
 using Registrera.se.Models;
 
 namespace Registrera.se.Controllers
 {
-    [Authorize(Roles = "Administrator,Teacher")]
-    public class CoursesController : Controller
+    [Authorize(Roles = "Administrator,Teacher,Student")]
+    public class StudentCoursesController : Controller
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public CoursesController(ApplicationDbContext context, UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+        public StudentCoursesController(ApplicationDbContext context)
         {
             _context = context;
-            _userManager = userManager;
-            _signInManager = signInManager;
         }
 
-        // GET: Courses
-        public async Task<IActionResult> Index( string sortId, string searchString)
+        [AllowAnonymous]
+        // GET: StudentCourses
+        public async Task<IActionResult> Index(string sortId, string searchString)
         {
             ViewData["TitleSortingParm"] = string.IsNullOrEmpty(sortId) ? "titleDesc" : "";
             ViewData["StartDateSortingParm"] = sortId == "startDate" ? "startDateDesc" : "startDate";
             ViewData["EndDateSortingParm"] = sortId == "endDate" ? "endDateDesc" : "endDate";
             ViewData["CountrySortingParm"] = sortId == "country" ? "countryDesc" : "country";
-            ViewData["CurrentSearch"] = searchString; 
+            ViewData["CurrentSearch"] = searchString;
             var courses = from s in _context.Courses select s;
 
             if (!string.IsNullOrEmpty(searchString))
@@ -73,20 +69,34 @@ namespace Registrera.se.Controllers
             }
             return View(await courses.AsNoTracking().ToListAsync());
         }
-        public async Task<IActionResult> UserCourses()
+
+        
+        public async Task<IActionResult> Register(int? id)
         {
-            var name = User.FindFirst(ClaimTypes.Name).Value;
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var StudentCourses = HttpContext.Session.GetString("Courses");
             
-            var courses = from s in _context.Courses select s;
-            courses = courses.Where(c => c.Teacher == name);
-          
+            var courseDetails = await _context.Courses.FindAsync(id);
+            List<CourseDetails> userCourses = new List<CourseDetails>();
+            
 
+            if ((StudentCourses != null) || (StudentCourses == ""))
+            {
+                userCourses = JsonConvert.DeserializeObject<List<CourseDetails>>(StudentCourses);
+            }
+            userCourses.Add(courseDetails);
+            string s = JsonConvert.SerializeObject(userCourses);
+            HttpContext.Session.SetString("Courses", s);
 
-            return View(await courses.AsNoTracking().ToListAsync());
+            return View(userCourses);
+
         }
 
-            // GET: Courses/Details/5
-            public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -103,31 +113,18 @@ namespace Registrera.se.Controllers
             return View(courseDetails);
         }
 
-        // GET: Courses/Create
+        // GET: StudentCourses/Create
         public IActionResult Create()
         {
-            var name = User.FindFirst(ClaimTypes.Name).Value;
-            ViewBag.name = name;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,About, Country, City, School, Teacher, StartDate,EndDate")] CourseDetails courseDetails)
+        public async Task<IActionResult> Create([Bind("Id,Title,About,Country,City,School,Teacher,StartDate,EndDate")] CourseDetails courseDetails)
         {
             if (ModelState.IsValid)
             {
-                
-                var name = User.FindFirst(ClaimTypes.Name).Value;
-                ViewBag.name = name;
-                courseDetails.Teacher = name;
-         
-
-                //var teacher = User.FindFirst("UserName").Value;
-                //var teacher1 = await _userManager.FindByIdAsync(User.Identity.Name) as Teacher;
-                //// if(teacher == null) { return View(courseDetails); }
-
-
                 _context.Add(courseDetails);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -135,7 +132,7 @@ namespace Registrera.se.Controllers
             return View(courseDetails);
         }
 
-        // GET: Courses/Edit/5
+        // GET: StudentCourses/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -151,9 +148,9 @@ namespace Registrera.se.Controllers
             return View(courseDetails);
         }
 
-        // POST: Courses/Edit/5
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,About, Country, City, School, Teacher, StartDate,EndDate")] CourseDetails courseDetails)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,About,Country,City,School,Teacher,StartDate,EndDate")] CourseDetails courseDetails)
         {
             if (id != courseDetails.Id)
             {
@@ -183,7 +180,7 @@ namespace Registrera.se.Controllers
             return View(courseDetails);
         }
 
-        // GET: Courses/Delete/5
+        // GET: StudentCourses/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -201,7 +198,7 @@ namespace Registrera.se.Controllers
             return View(courseDetails);
         }
 
-        // POST: Courses/Delete/5
+        // POST: StudentCourses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

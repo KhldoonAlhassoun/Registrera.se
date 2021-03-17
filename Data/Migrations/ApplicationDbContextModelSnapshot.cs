@@ -73,6 +73,9 @@ namespace Registrera.se.Data.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
+
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
@@ -112,6 +115,8 @@ namespace Registrera.se.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -180,7 +185,7 @@ namespace Registrera.se.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Registrera.se.Models.Course", b =>
+            modelBuilder.Entity("Registrera.se.Models.CourseDetails", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -189,17 +194,23 @@ namespace Registrera.se.Data.Migrations
                     b.Property<string>("About")
                         .IsRequired();
 
+                    b.Property<string>("City")
+                        .IsRequired();
+
+                    b.Property<string>("Country")
+                        .IsRequired();
+
                     b.Property<DateTime>("EndDate");
 
-                    b.Property<string>("OwnerID");
+                    b.Property<int?>("PlaceId");
 
-                    b.Property<int>("PlaceId");
+                    b.Property<string>("School")
+                        .IsRequired();
 
                     b.Property<DateTime>("StartDate");
 
-                    b.Property<int>("Status");
-
-                    b.Property<int>("TeacherId");
+                    b.Property<string>("Teacher")
+                        .IsRequired();
 
                     b.Property<string>("Title")
                         .IsRequired();
@@ -207,8 +218,6 @@ namespace Registrera.se.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PlaceId");
-
-                    b.HasIndex("TeacherId");
 
                     b.ToTable("Courses");
                 });
@@ -243,45 +252,29 @@ namespace Registrera.se.Data.Migrations
 
             modelBuilder.Entity("Registrera.se.Models.Student", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<string>("FirstName")
-                        .IsRequired();
+                    b.ToTable("Student");
 
-                    b.Property<string>("LastName")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Students");
+                    b.HasDiscriminator().HasValue("Student");
                 });
 
             modelBuilder.Entity("Registrera.se.Models.Teacher", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("About")
-                        .IsRequired();
+                    b.Property<string>("About");
 
-                    b.Property<string>("Email")
-                        .IsRequired();
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("Teacher_Name");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired();
+                    b.ToTable("Teacher");
 
-                    b.Property<string>("LastName")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Teachers");
+                    b.HasDiscriminator().HasValue("Teacher");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -329,17 +322,11 @@ namespace Registrera.se.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Registrera.se.Models.Course", b =>
+            modelBuilder.Entity("Registrera.se.Models.CourseDetails", b =>
                 {
-                    b.HasOne("Registrera.se.Models.Place", "Place")
-                        .WithMany()
-                        .HasForeignKey("PlaceId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Registrera.se.Models.Teacher", "Teacher")
-                        .WithMany()
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("Registrera.se.Models.Place")
+                        .WithMany("Courses")
+                        .HasForeignKey("PlaceId");
                 });
 #pragma warning restore 612, 618
         }

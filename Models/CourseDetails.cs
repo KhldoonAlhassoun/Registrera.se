@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Registrera.se.Models
 {
-    public class Course
+    public class CourseDetails
     {
-        public Course() { }
+        public CourseDetails() { }
 
         public int Id { get; set; }
 
@@ -18,31 +18,27 @@ namespace Registrera.se.Models
         [Required]
         public string About { get; set; }
 
+       
+        [Required]
+        public string Country { get; set; }
+        
+        [Required]
+        public string City { get; set; }
+        [Required]
+        public string School { get; set; }
+        [Required]
+        public string Teacher { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
+
         [Required]
         [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
 
-        [Required]
-        public Place Place { get; set; }
-        [Required]
-        public Teacher Teacher { get; set; }
 
-        // user ID from AspNetUser table.
-        public string OwnerID { get; set; }
-
-        public  CourseStatus Status { get; set; }
     }
-    public enum CourseStatus
-    {
-        Submitted,
-        Approved,
-        Rejected
-    }
-
 }
 
 

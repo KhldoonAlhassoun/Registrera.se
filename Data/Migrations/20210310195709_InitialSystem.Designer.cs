@@ -10,8 +10,8 @@ using Registrera.se.Data;
 namespace Registrera.se.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210224152502_CreatedModelsTabels")]
-    partial class CreatedModelsTabels
+    [Migration("20210310195709_InitialSystem")]
+    partial class InitialSystem
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -75,6 +75,9 @@ namespace Registrera.se.Data.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
+
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
@@ -114,6 +117,8 @@ namespace Registrera.se.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -138,11 +143,9 @@ namespace Registrera.se.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.Property<string>("LoginProvider")
-                        .HasMaxLength(128);
+                    b.Property<string>("LoginProvider");
 
-                    b.Property<string>("ProviderKey")
-                        .HasMaxLength(128);
+                    b.Property<string>("ProviderKey");
 
                     b.Property<string>("ProviderDisplayName");
 
@@ -173,11 +176,9 @@ namespace Registrera.se.Data.Migrations
                 {
                     b.Property<string>("UserId");
 
-                    b.Property<string>("LoginProvider")
-                        .HasMaxLength(128);
+                    b.Property<string>("LoginProvider");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(128);
+                    b.Property<string>("Name");
 
                     b.Property<string>("Value");
 
@@ -186,7 +187,7 @@ namespace Registrera.se.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Registrera.se.Models.Course", b =>
+            modelBuilder.Entity("Registrera.se.Models.CourseDetails", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -197,20 +198,23 @@ namespace Registrera.se.Data.Migrations
 
                     b.Property<DateTime>("EndDate");
 
+                    b.Property<string>("OwnerID");
+
+                    b.Property<int>("PlaceId");
+
                     b.Property<DateTime>("StartDate");
+
+                    b.Property<string>("TeacherId")
+                        .IsRequired();
 
                     b.Property<string>("Title")
                         .IsRequired();
 
-                    b.Property<int>("placeId");
-
-                    b.Property<int>("teacherId");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("placeId");
+                    b.HasIndex("PlaceId");
 
-                    b.HasIndex("teacherId");
+                    b.HasIndex("TeacherId");
 
                     b.ToTable("Courses");
                 });
@@ -245,45 +249,29 @@ namespace Registrera.se.Data.Migrations
 
             modelBuilder.Entity("Registrera.se.Models.Student", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<string>("FirstName")
-                        .IsRequired();
+                    b.ToTable("Student");
 
-                    b.Property<string>("LastName")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Students");
+                    b.HasDiscriminator().HasValue("Student");
                 });
 
             modelBuilder.Entity("Registrera.se.Models.Teacher", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("About")
-                        .IsRequired();
+                    b.Property<string>("About");
 
-                    b.Property<string>("Email")
-                        .IsRequired();
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("Teacher_Name");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired();
+                    b.ToTable("Teacher");
 
-                    b.Property<string>("LastName")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Teachers");
+                    b.HasDiscriminator().HasValue("Teacher");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -331,16 +319,16 @@ namespace Registrera.se.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Registrera.se.Models.Course", b =>
+            modelBuilder.Entity("Registrera.se.Models.CourseDetails", b =>
                 {
-                    b.HasOne("Registrera.se.Models.Place", "place")
-                        .WithMany()
-                        .HasForeignKey("placeId")
+                    b.HasOne("Registrera.se.Models.Place", "Place")
+                        .WithMany("Courses")
+                        .HasForeignKey("PlaceId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Registrera.se.Models.Teacher", "teacher")
+                    b.HasOne("Registrera.se.Models.Teacher", "Teacher")
                         .WithMany()
-                        .HasForeignKey("teacherId")
+                        .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

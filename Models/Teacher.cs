@@ -6,19 +6,9 @@ using System.Threading.Tasks;
 
 namespace Registrera.se.Models
 {
-    public class Teacher : User
+    public class Teacher : ApplicationUsers
     {
         public Teacher() { }
-
-        public int Id { get; set; }
-
-        [Required]
-        public string FirstName { get; set; }
-        [Required]
-        public string LastName { get; set; }
-        [Required]
         public string About { get; set; }
-        [Required]
-        public string Email { get; set; }
     }
 }

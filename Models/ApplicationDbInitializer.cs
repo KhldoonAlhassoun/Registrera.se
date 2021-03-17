@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Registrera.se.Models
 {
-    public class User
+    public class ApplicationDbInitializer
     {
     }
 }

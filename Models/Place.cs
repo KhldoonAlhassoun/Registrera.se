@@ -16,5 +16,7 @@ namespace Registrera.se.Models
         public string Region { get; set; }
         [Required]
         public string City { get; set; }
+
+        public virtual List<CourseDetails> Courses { get; set; }
     }
 }

@@ -1,12 +1,16 @@
-﻿@model Registrera.se.Models.Course
+﻿@model Registrera.se.Models.CourseDetails
+@inject Registrera.se.Data.Repositories.PlacesRepository PlacesRepository
 
 @{
     ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var places = PlacesRepository.GetPlaces().Select(x => new SelectListItem(x.City, x.Id.ToString()));
 }
 
 <h2>Create</h2>
 
-<h4>Course</h4>
+<h4>CourseDetails</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -22,6 +26,27 @@
                 <input asp-for="About" class="form-control" />
                 <span asp-validation-for="About" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <label asp-for="Country" class="control-label"></label>
+                <input asp-for="Country" class="form-control" />
+                <span asp-validation-for="Country" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="School" class="control-label"></label>
+                <input asp-for="School" class="form-control" />
+                <span asp-validation-for="School" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Teacher" class="control-label"></label>
+                <input asp-for="Teacher" class="form-control" value="@ViewBag.Name" />
+                <span asp-validation-for="Teacher" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="StartDate" class="control-label"></label>
                 <input asp-for="StartDate" class="form-control" />
@@ -32,6 +57,15 @@
                 <input asp-for="EndDate" class="form-control" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
+
+
+            @*<div class="form-group">
+                    <label asp-for="Place" class="control-label"></label>
+                    <select
+                            asp-for="Place.City" asp-items="places" class="form-control">
+                    </select>
+                    <span asp-validation-for="Place" class="text-danger"></span>
+                </div>*@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>

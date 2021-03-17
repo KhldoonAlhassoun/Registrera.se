@@ -13,11 +13,10 @@ namespace Registrera.se.Data
             : base(options)
         {
         }
-        public DbSet<Course> Courses { get; set; }
+        public DbSet<CourseDetails> Courses { get; set; }
         public DbSet<Place> Places { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Student> Students { get; set; }
-        public DbSet<Library> Library { get; set; }
 
 
     }

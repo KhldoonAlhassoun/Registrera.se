@@ -1,64 +1,40 @@
 ﻿@model IEnumerable<Registrera.se.Models.CourseDetails>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "UserCourses";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Courses</h2>
+<h2>My Courses</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-
-<form asp-action="Index" method="get">
-    <div class=" form-action no-color">
-        <p>
-            Search by title, city or teacher's last name: 
-            <input type="text" name="searchString" value="@ViewData["CurrentSearch"]"/>
-            <input type="submit" value="Search" class="btn btn-primary" /> 
-        </p>
-
-    </div>
-</form>
 <table class="table">
     <thead>
         <tr>
             <th>
-                <a asp-action="Index" asp-route-sortId="@ViewData["TitleSortingParm"]">@Html.DisplayNameFor(model => model.Title) </a>
-
-            </th>
-
-            <th>
-                <a asp-action="Index" asp-route-sortId="@ViewData["AboutSortingParm"]">@Html.DisplayNameFor(model => model.About) </a>
-
+                @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortId="@ViewData["CountryeSortingParm"]">@Html.DisplayNameFor(model => model.Country) </a>
-
+                @Html.DisplayNameFor(model => model.About)
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortId="@ViewData["CitySortingParm"]">@Html.DisplayNameFor(model => model.City) </a>
-
-            </th>
-
-            <th>
-                <a asp-action="Index" asp-route-sortId="@ViewData["SchoolSortingParm"]">@Html.DisplayNameFor(model => model.School) </a>
-
+                @Html.DisplayNameFor(model => model.Country)
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortId="@ViewData["TeacherSortingParm"]">@Html.DisplayNameFor(model => model.Teacher) </a>
-
+                @Html.DisplayNameFor(model => model.City)
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortId="@ViewData["StartDateSortingParm"]"> @Html.DisplayNameFor(model => model.StartDate)</a>
-
+                @Html.DisplayNameFor(model => model.School)
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortId="@ViewData["EndDateSortingParm"]">@Html.DisplayNameFor(model => model.EndDate)</a>
-
+                @Html.DisplayNameFor(model => model.Teacher)
             </th>
-           
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -73,7 +49,6 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Country)
             </td>
-
             <td>
                 @Html.DisplayFor(modelItem => item.City)
             </td>
